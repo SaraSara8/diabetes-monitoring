@@ -1,0 +1,24 @@
+docker build -t front-service:latest .
+docker build -t gateway-service:latest .
+docker build -t patient-service:latest .
+
+
+
+docker network create mynetwork
+
+docker run -d --name mongodb --network mynetwork -p 27017:27017 mongo:latest
+
+docker run -d --name patient-service --network mynetwork -p 8081:8081 -e SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/patientdb patient-service:latest
+
+docker run -d --name gateway-service --network mynetwork -p 8080:8080 gateway-service:latest
+
+docker run -d --name front-service --network mynetwork -p 8082:8082 front-service:latest
+
+
+
+
+mvn install:install-file -Dfile=chemin/vers/gpsUtil-1.0.0.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
+
+
+
+mvn install:install-file -Dfile=libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar

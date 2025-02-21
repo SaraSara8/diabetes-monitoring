@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret-value: MyJwtSecret12345  # Même secret que patient-service
+
+cloud:
+  gateway:
+    routes:
+      - id: patient-service
+        uri: http://localhost:8081
+        predicates:
+          - Path=/api/patients/**
+
