@@ -2,9 +2,12 @@ package com.diabetes.patient.controller;
 
 import com.diabetes.patient.model.Patient;
 import com.diabetes.patient.repository.PatientRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +17,7 @@ import java.util.Optional;
 @RequestMapping("/api/patients")
 public class PatientController {
 
+    private static final Logger logger = LogManager.getLogger(PatientController.class);
     @Autowired
     private PatientRepository patientRepository;
 
@@ -40,11 +44,23 @@ public class PatientController {
         return patient.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+
     @PostMapping
     public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) {
-        Patient savedPatient = patientRepository.save(patient);
-        return ResponseEntity.ok(savedPatient);
+        // Vérifier si le patient existe déjà
+
+
+
+        if(patientRepository.findByNomAndPrenomAndDateNaissance(patient.getNom(), patient.getPrenom(), patient.getDateNaissance()).isEmpty()){
+            Patient savedPatient = patientRepository.save(patient);
+            return ResponseEntity.ok(savedPatient);
+
+        } else {
+            logger.error("Le patient existe déjà");
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Patient> updatePatient(@PathVariable String id, @RequestBody Patient updatedPatient) {
