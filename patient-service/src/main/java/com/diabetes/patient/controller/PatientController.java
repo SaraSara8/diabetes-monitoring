@@ -1,69 +1,64 @@
 package com.diabetes.patient.controller;
 
-
 import com.diabetes.patient.model.Patient;
-import com.diabetes.patient.service.PatientService;
+import com.diabetes.patient.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
 import java.util.Optional;
 
-/**
- * Contrôleur REST pour la gestion des patients.
- */
 @RestController
 @RequestMapping("/api/patients")
 public class PatientController {
 
     @Autowired
-    private PatientService patientService;
+    private PatientRepository patientRepository;
 
     /**
-     * Récupère la liste de tous les patients.
-     * @return liste des patients
+     * Récupère une page de patients.
+     * Si le paramètre "query" est fourni, effectue une recherche par nom ou prénom.
      */
     @GetMapping
-    public List<Patient> getAllPatients() {
-        return patientService.getAllPatients();
+    public ResponseEntity<Page<Patient>> getPatients(
+            @RequestParam(value = "query", required = false) String query,
+            Pageable pageable) {
+        Page<Patient> patients;
+        if (query != null && !query.trim().isEmpty()) {
+            patients = patientRepository.findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(query, query, pageable);
+        } else {
+            patients = patientRepository.findAll(pageable);
+        }
+        return ResponseEntity.ok(patients);
     }
 
-    /**
-     * Récupère un patient par son identifiant.
-     * @param id identifiant du patient
-     * @return ResponseEntity contenant le patient ou un statut 404 si non trouvé
-     */
     @GetMapping("/{id}")
     public ResponseEntity<Patient> getPatientById(@PathVariable String id) {
-        Optional<Patient> patientOpt = patientService.getPatientById(id);
-        if (patientOpt.isPresent()) {
-            return ResponseEntity.ok(patientOpt.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Optional<Patient> patient = patientRepository.findById(id);
+        return patient.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * Crée un nouveau patient.
-     * @param patient objet Patient à créer
-     * @return le patient créé
-     */
     @PostMapping
-    public Patient createPatient(@RequestBody Patient patient) {
-        return patientService.createPatient(patient);
+    public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) {
+        Patient savedPatient = patientRepository.save(patient);
+        return ResponseEntity.ok(savedPatient);
     }
 
-    /**
-     * Met à jour un patient existant.
-     * @param id identifiant du patient à mettre à jour
-     * @param patient objet contenant les nouvelles informations
-     * @return ResponseEntity contenant le patient mis à jour ou un statut 404 si non trouvé
-     */
     @PutMapping("/{id}")
-    public ResponseEntity<Patient> updatePatient(@PathVariable String id, @RequestBody Patient patient) {
-        Patient updatedPatient = patientService.updatePatient(id, patient);
-        if (updatedPatient != null) {
-            return ResponseEntity.ok(updatedPatient);
+    public ResponseEntity<Patient> updatePatient(@PathVariable String id, @RequestBody Patient updatedPatient) {
+        Optional<Patient> existing = patientRepository.findById(id);
+        if (existing.isPresent()) {
+            Patient patient = existing.get();
+            patient.setPrenom(updatedPatient.getPrenom());
+            patient.setNom(updatedPatient.getNom());
+            patient.setDateNaissance(updatedPatient.getDateNaissance());
+            patient.setGenre(updatedPatient.getGenre());
+            patient.setAdressePostale(updatedPatient.getAdressePostale());
+            patient.setNumeroTelephone(updatedPatient.getNumeroTelephone());
+            Patient saved = patientRepository.save(patient);
+            return ResponseEntity.ok(saved);
         } else {
             return ResponseEntity.notFound().build();
         }

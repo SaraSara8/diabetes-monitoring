@@ -1,6 +1,10 @@
 docker build -t front-service:latest .
 docker build -t gateway-service:latest .
 docker build -t patient-service:latest .
+docker build -t notes-service:latest .
+
+docker build -t risk-service:latest .
+
 
 
 
@@ -14,11 +18,39 @@ docker run -d --name gateway-service --network mynetwork -p 8080:8080 gateway-se
 
 docker run -d --name front-service --network mynetwork -p 8082:8082 front-service:latest
 
+docker run -d --name notes-service --network mynetwork -p 8083:8083 -e SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/notesdb notes-service:latest
+
+
+docker run -d --name risk-assessment-service --network mynetwork -p 8084:8084 - risk-service:latest
+
+docker logs  gateway-service  
+
+docker logs  patient-service  
+
+docker logs front-service  
+
+
+docker stop gateway-service
+
+docker rm gateway-service
+
+docker images
+docker rmi gateway-service:latest
+
+mvn clean package
 
 
 
-mvn install:install-file -Dfile=chemin/vers/gpsUtil-1.0.0.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
+docker stop gateway-service
+docker rm gateway-service
+docker rmi gateway-service:latest
+mvn clean package
+docker build -t gateway-service:latest .
+docker run -d --name gateway-service -p 8080:8080 gateway-service:latest
 
+docker-compose down
 
+docker-compose up --build
 
-mvn install:install-file -Dfile=libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
+https://github.com/Bibarss/diabetes-monitoring.git
+

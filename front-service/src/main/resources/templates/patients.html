@@ -1,35 +1,166 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Liste des Patients</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #007acc;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .search-form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-form input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .search-form button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #007acc;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        table th, table td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        table th {
+            background-color: #007acc;
+            color: white;
+        }
+        .actions a, .notes a, .risk a {
+            text-decoration: none;
+            color: #007acc;
+            font-weight: bold;
+        }
+        .pagination {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .pagination a {
+            margin: 0 8px;
+            text-decoration: none;
+            color: #007acc;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .footer a {
+            text-decoration: none;
+            color: #007acc;
+            margin: 0 10px;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-<h1>Liste des Patients</h1>
+<header>
+    <h1>Gestion des Patients</h1>
+</header>
 
-<div th:if="${error}">
-    <p style="color:red" th:text="${error}"></p>
+<div class="container">
+    <!-- Formulaire de recherche -->
+    <div class="search-form">
+        <form th:action="@{/patients}" method="get">
+            <input type="text" name="query" placeholder="Rechercher par nom ou prénom" th:value="${query}" />
+            <button type="submit">Rechercher</button>
+        </form>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div th:if="${error}" class="error">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Tableau des patients -->
+    <table>
+        <thead>
+        <tr>
+
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Date de naissance</th>
+            <th>Genre</th>
+            <th>Adresse postale</th>
+            <th>Téléphone</th>
+            <th>Actions</th>
+            <th>Notes</th>
+            <th>Risque</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="patient : ${patientsPage.content}">
+            <td th:text="${patient.nom}">Nom</td>
+            <td th:text="${patient.prenom}">Prénom</td>
+            <td th:text="${patient.dateNaissance}">Date</td>
+            <td th:text="${patient.genre}">Genre</td>
+            <td th:text="${patient.adressePostale}">Adresse</td>
+            <td th:text="${patient.numeroTelephone}">Téléphone</td>
+            <td class="actions">
+                <a th:href="@{'/patients/edit'(id=${patient.id})}">Modifier</a>
+            </td>
+            <td class="notes">
+                <a th:href="@{'/patients/' + ${patient.id} + '/notes' + '?nom=' + ${patient.nom} + '&prenom=' + ${patient.prenom}}">Voir notes</a>
+            </td>
+            <td class="risk">
+                <a th:href="@{'/patients/' + ${patient.id} + '/risk'}">Consulter risque</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <span th:text="'Page ' + (${patientsPage.number} + 1) + ' sur ' + ${patientsPage.totalPages}"></span>
+        <div>
+            <a th:if="${!patientsPage.first}"
+               th:href="@{'/patients'(page=${patientsPage.number - 1}, size=${patientsPage.size}, query=${query})}">Précédent</a>
+            <a th:if="${!patientsPage.last}"
+               th:href="@{'/patients'(page=${patientsPage.number + 1}, size=${patientsPage.size}, query=${query})}">Suivant</a>
+        </div>
+    </div>
+
+    <!-- Liens de navigation -->
+    <div class="footer">
+        <a href="/patients/add">Ajouter un patient</a> |
+        <a href="/logout">Déconnexion</a>
+    </div>
 </div>
-
-<table border="1">
-    <tr>
-        <th>Prénom</th>
-        <th>Nom</th>
-        <th>Naissance</th>
-        <th>Genre</th>
-        <th>Adresse</th>
-        <th>Téléphone</th>
-    </tr>
-
-
-    <tr th:each="patient: ${patients}">
-        <td th:text="${patient.prenom}"></td>
-        <td th:text="${patient.nom}"></td>
-        <td th:text="${patient.dateNaissance}"></td>
-        <td th:text="${patient.genre}"></td>
-        <td th:text="${patient.adressePostale}"></td>
-        <td th:text="${patient.numeroTelephone}"></td>
-    </tr>
-</table>
-
 </body>
 </html>

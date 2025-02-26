@@ -1,0 +1,65 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    networks:
+      - mynetwork
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+  gateway-service:
+    build: ./gateway-service
+    container_name: gateway-service
+    networks:
+      - mynetwork
+    ports:
+      - "8080:8080"
+    # La gateway n'utilise pas la base de données directement, mais si besoin, vous pouvez ajouter d'autres variables
+
+  patient-service:
+    build: ./patient-service
+    container_name: patient-service
+    networks:
+      - mynetwork
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/notesdb
+
+  front-service:
+    build: ./front-service
+    container_name: front-service
+    networks:
+      - mynetwork
+    ports:
+      - "8082:8082"
+    # Le front-service n'accède pas directement à MongoDB
+
+  notes-service:
+    build: ./notes-service
+    container_name: notes-service
+    networks:
+      - mynetwork
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/notesdb
+
+  risk-assessment-service:
+    build: ./risk-assessment-service
+    container_name: risk-assessment-service
+    networks:
+      - mynetwork
+    ports:
+      - "8084:8084"
+    # Ce service interroge les autres services, pas besoin de MongoDB ici directement
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  mongodb-data:

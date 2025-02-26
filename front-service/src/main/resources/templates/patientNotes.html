@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique des Notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #007acc;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 30px auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .patient-info {
+            text-align: left;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #e6f2ff;
+        }
+        .patient-info p {
+            margin: 5px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        table th, table td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        table th {
+            background-color: #007acc;
+            color: white;
+        }
+        form {
+            text-align: center;
+            margin-top: 20px;
+        }
+        form textarea {
+            width: 70%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        form button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .footer a {
+            text-decoration: none;
+            color: #007acc;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Historique des Notes</h1>
+</header>
+<div class="container">
+    <!-- Affichage des informations du patient -->
+    <div class="patient-info" th:if="${patientId != null}">
+        <p><strong>ID du Patient :</strong> <span th:text="${patientId}">ID</span></p>
+        <p><strong>Nom :</strong> <span th:text="${patientNom}">Nom</span></p>
+        <p><strong>Prénom :</strong> <span th:text="${patientPrenom}">Prénom</span></p>
+    </div>
+
+    <div th:if="${error}" class="error">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Tableau des notes -->
+    <table>
+        <thead>
+        <tr>
+            <th>Contenu</th>
+            <th>Date de Création</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="note : ${notes}">
+            <td th:text="${note.content}">Contenu de la note</td>
+            <td th:text="${note.createdAt}">Date</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Formulaire d'ajout d'une note -->
+    <h2>Ajouter une Note</h2>
+    <form th:action="@{'/patients/' + ${patientId} + '/notes'}" method="post">
+        <textarea name="content" placeholder="Saisissez votre note ici..." required></textarea><br/>
+        <button type="submit">Ajouter la Note</button>
+    </form>
+
+    <div class="footer">
+        <a href="/patients">Retour à la liste des patients</a>
+    </div>
+</div>
+</body>
+</html>

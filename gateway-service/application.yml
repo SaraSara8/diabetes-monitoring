@@ -12,7 +12,15 @@ cloud:
   gateway:
     routes:
       - id: patient-service
-        uri: http://localhost:8081
+        uri: http://patient-service:8081
         predicates:
           - Path=/api/patients/**
+      - id: notes-service
+        uri: http://notes-service:8083
+        predicates:
+          - Path=/api/notes/**
+      - id: risk-service
+        uri: http://risk-assessment-service:8084
+        predicates:
+          - Path=/api/risk/**
 
