@@ -18,6 +18,7 @@ import java.util.Optional;
 public class PatientController {
 
     private static final Logger logger = LogManager.getLogger(PatientController.class);
+
     @Autowired
     private PatientRepository patientRepository;
 
@@ -38,18 +39,9 @@ public class PatientController {
         return ResponseEntity.ok(patients);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Patient> getPatientById(@PathVariable String id) {
-        Optional<Patient> patient = patientRepository.findById(id);
-        return patient.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
-
-
     @PostMapping
     public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) {
         // Vérifier si le patient existe déjà
-
-
 
         if(patientRepository.findByNomAndPrenomAndDateNaissance(patient.getNom(), patient.getPrenom(), patient.getDateNaissance()).isEmpty()){
             Patient savedPatient = patientRepository.save(patient);
@@ -59,6 +51,14 @@ public class PatientController {
             logger.error("Le patient existe déjà");
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Patient> getPatientById(@PathVariable String id) {
+        Optional<Patient> patient = patientRepository.findById(id);
+        return patient.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
 

@@ -165,14 +165,27 @@ public class FrontController {
             HttpHeaders headers = createHeaders(session);
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<PatientDto> request = new HttpEntity<>(patientDto, headers);
-            restTemplate.postForEntity(PATIENT_SERVICE_URL, request, PatientDto.class);
+            // Utilisation de postForEntity, qui lance une exception si le statut n'est pas 2xx
+            ResponseEntity<PatientDto> response = restTemplate.postForEntity(PATIENT_SERVICE_URL, request, PatientDto.class);
             return "redirect:/patients";
+        } catch (org.springframework.web.client.HttpClientErrorException ex) {
+            if (ex.getStatusCode() == HttpStatus.CONFLICT) {
+                // Si le patient existe déjà, on affiche le message dans le formulaire
+                logger.error("Patient déjà présent");
+                model.addAttribute("error", "Patient déjà présent");
+                return "patientForm";
+            } else {
+                logger.error("Erreur lors de l'ajout du patient : {}", ex.getMessage());
+                model.addAttribute("error", "Erreur lors de l'ajout du patient");
+                return "patientForm";
+            }
         } catch (Exception e) {
             logger.error("Erreur lors de l'ajout du patient : {}", e.getMessage());
             model.addAttribute("error", "Erreur lors de l'ajout du patient");
             return "patientForm";
         }
     }
+
 
     @GetMapping("/patients/edit")
     public String showEditForm(@RequestParam String id, Model model, HttpSession session) {
@@ -287,12 +300,18 @@ public class FrontController {
         try {
             restTemplate.postForEntity(url, request, NoteDto.class);
             return "redirect:/patients/" + patientId + "/notes";
+        } catch (org.springframework.web.client.HttpClientErrorException.NotFound ex) {
+            // Cas où le notes-service indique que le patient n'existe pas
+            logger.error("Patient non trouvé lors de l'ajout de la note: {}", ex.getMessage());
+            model.addAttribute("error", "Patient non trouvé dans la base de données");
+            return "patientNotes";
         } catch (Exception e) {
             logger.error("Erreur lors de l'ajout de la note: {}", e.getMessage());
             model.addAttribute("error", "Erreur lors de l'ajout de la note");
             return "patientNotes";
         }
     }
+
 
     /*================================
          SECTION RISQUE

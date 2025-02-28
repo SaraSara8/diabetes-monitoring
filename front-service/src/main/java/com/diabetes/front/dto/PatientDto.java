@@ -1,4 +1,3 @@
-
 package com.diabetes.front.dto;
 
 import org.springframework.format.annotation.DateTimeFormat;

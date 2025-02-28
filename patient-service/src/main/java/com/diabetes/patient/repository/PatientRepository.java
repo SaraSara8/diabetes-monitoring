@@ -18,6 +18,4 @@ public interface PatientRepository extends MongoRepository<Patient, String> {
     Page<Patient> findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(String nom, String prenom, Pageable pageable);
 
     Optional<Patient> findByNomAndPrenomAndDateNaissance(String nom, String prenom, LocalDate dateNaissance);
-
-
 }

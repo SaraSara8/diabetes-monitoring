@@ -93,8 +93,8 @@
     <!-- Affichage des informations du patient -->
     <div class="patient-info" th:if="${patientId != null}">
         <p><strong>ID du Patient :</strong> <span th:text="${patientId}">ID</span></p>
-        <p><strong>Nom :</strong> <span th:text="${patientNom}">Nom</span></p>
         <p><strong>Prénom :</strong> <span th:text="${patientPrenom}">Prénom</span></p>
+        <p><strong>Nom :</strong> <span th:text="${patientNom}">Nom</span></p>
     </div>
 
     <div th:if="${error}" class="error">
