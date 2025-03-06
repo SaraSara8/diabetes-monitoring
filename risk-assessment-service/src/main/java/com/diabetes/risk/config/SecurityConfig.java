@@ -11,6 +11,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+
+/**
+ * Configuration de sécurité pour le microservice Risk.
+ *
+ * <p>
+ * Active l'authentification HTTP Basic pour toutes les requêtes et définit un utilisateur en mémoire (nom: admin, mot de passe: 1234 encodé avec BCrypt, rôle: USER).
+ * </p>
+ */
+
 @Configuration
 public class SecurityConfig {
 

@@ -63,7 +63,7 @@ public class RiskAssessmentController {
 
             // Calculer le risque de diabète
             RiskAssessmentService.RiskLevel risk = riskAssessmentService.assessRisk(patient, notes);
-            int triggerCount = riskAssessmentService.countTriggers(notes);
+            int triggerCount = riskAssessmentService.countUniqueTriggers(notes);
 
             // Préparer le rapport de risque
             Map<String, Object> report = new HashMap<>();

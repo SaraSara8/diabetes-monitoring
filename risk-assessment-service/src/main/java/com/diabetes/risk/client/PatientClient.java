@@ -5,11 +5,12 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import com.diabetes.risk.config.PatientsFeignConfig;
 
 /**
  * Client Feign pour communiquer avec le microservice patient.
  */
-@FeignClient(name = "patient-service", url = "${patient.service.url:http://patient-service:8081/api/patients}")
+@FeignClient(name = "patient-service", url = "${patient.service.url:http://patient-service:8081}",  configuration = PatientsFeignConfig.class)
 public interface PatientClient {
 
     /**

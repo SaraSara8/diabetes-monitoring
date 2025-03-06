@@ -1,40 +1,36 @@
 package com.diabetes.patient;
 
-
 import com.diabetes.patient.model.Patient;
-import com.diabetes.patient.repository.PatientRepository;
+import com.diabetes.patient.service.PatientService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 
+
 /**
- * Classe pour précharger des données de test dans la base de données.
+ * Composant Spring qui précharge des données de test pour l'entité Patient au démarrage de l'application.
+ * Si la collection est vide, il ajoute quelques patients de test via le PatientService, qui gère également la génération d'identifiants auto-incrémentés.
  */
+
+
 @Component
 public class DataLoader implements CommandLineRunner {
 
-    private final PatientRepository patientRepository;
+    private final PatientService patientService;
 
-    public DataLoader(PatientRepository patientRepository) {
-        this.patientRepository = patientRepository;
+    // Injecter PatientService pour utiliser createPatient() qui gère l'id
+    public DataLoader(PatientService patientService) {
+        this.patientService = patientService;
     }
-
-
-    /**
-     * Méthode de type CommandLineRunner permettant d'insérer des données
-     * de test à chaque démarrage de l'application.
-     *
-     * @return un objet CommandLineRunner
-     */
 
     @Override
     public void run(String... args) throws Exception {
-        // Si la collection est vide, ajouter quelques patients de test
-        if (patientRepository.count() == 0) {
-            patientRepository.save(new Patient("Jean", "Dupont", LocalDate.of(1970, 5, 20), "M", "123 Rue Principale", "0102030405"));
-            patientRepository.save(new Patient("Marie", "Curie", LocalDate.of(1980, 3, 15), "F", "456 Avenue de la République", "0607080910"));
-            patientRepository.save(new Patient("Luc", "Martin", LocalDate.of(1990, 12, 10), "M", null, null));
-            patientRepository.save(new Patient("Sophie", "Lefevre", LocalDate.of(2000, 7, 25), "F", "789 Boulevard Victor Hugo", "1122334455"));
+        // Si la collection est vide, ajouter quelques patients de test via le service
+        if (patientService.getAllPatients().isEmpty()) {
+            patientService.createPatient(new Patient("TestNone", "Test", LocalDate.of(1966, 12, 31), "F", "1 Brookside St", "100-222-3333"));
+            patientService.createPatient(new Patient("TestBorderline", "Test", LocalDate.of(1945, 6, 24), "M", "2 High St", "200-333-4444"));
+            patientService.createPatient(new Patient("TestInDanger", "Test", LocalDate.of(2004, 6, 18), "M", "3 Club Road", "300-444-5555"));
+            patientService.createPatient(new Patient("TestEarlyOnset", "Test", LocalDate.of(2002, 6, 28), "F", "4 Valley Dr", "400-555-6666"));
         }
     }
 }

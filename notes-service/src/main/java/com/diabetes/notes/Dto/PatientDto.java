@@ -1,5 +1,11 @@
 package com.diabetes.notes.Dto;
 
+
+/**
+ * Data Transfer Object (DTO) représentant un patient.
+ * Contient les informations minimales : l'identifiant, le nom et le prénom.
+ */
+
 public class PatientDto {
     private String id;
     private String nom;

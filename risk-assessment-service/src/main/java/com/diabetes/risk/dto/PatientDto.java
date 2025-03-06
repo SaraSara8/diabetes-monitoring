@@ -2,6 +2,11 @@ package com.diabetes.risk.dto;
 
 import java.time.LocalDate;
 
+
+/**
+ * DTO représentant un patient avec ses informations de base : identifiant, prénom, nom, date de naissance et genre.
+ */
+
 public class PatientDto {
     private String id;
     private String prenom;

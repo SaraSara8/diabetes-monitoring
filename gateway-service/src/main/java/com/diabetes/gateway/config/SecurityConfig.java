@@ -12,6 +12,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+
+/**
+ * Configuration de sécurité pour la Gateway.
+ *
+ * <p>
+ * Autorise l'accès aux ressources statiques et aux endpoints d'authentification (ex: /auth/login)
+ * sans authentification, tandis que toutes les autres requêtes nécessitent une authentification HTTP Basic.
+ * Un utilisateur en mémoire (admin/1234) est configuré pour sécuriser les endpoints restants.
+ * </p>
+ */
+
 @Configuration
 public class SecurityConfig {
 

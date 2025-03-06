@@ -11,6 +11,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+
+/**
+ * Configuration de sécurité pour le service Notes.
+ *
+ * <p>
+ * Cette classe configure Spring Security pour exiger une authentification HTTP Basic sur toutes les requêtes.
+ * Elle désactive la protection CSRF et définit un utilisateur en mémoire (username "admin", mot de passe "1234" encodé avec BCrypt)
+ * avec le rôle "USER". Les beans de sécurité (SecurityFilterChain, InMemoryUserDetailsManager et PasswordEncoder)
+ * sont déclarés ici pour être utilisés par l'application.
+ * </p>
+ */
 @Configuration
 public class SecurityConfig {
 

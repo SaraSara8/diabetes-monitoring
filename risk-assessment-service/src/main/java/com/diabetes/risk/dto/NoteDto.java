@@ -2,6 +2,11 @@ package com.diabetes.risk.dto;
 
 import java.time.LocalDateTime;
 
+
+/**
+ * DTO représentant une note, incluant son identifiant, l'identifiant du patient associé, le contenu et la date de création.
+ */
+
 public class NoteDto {
     private String id;
     private String patientId;
